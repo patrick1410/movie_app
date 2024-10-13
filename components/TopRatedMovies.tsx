@@ -10,8 +10,8 @@ import useTMDB from "../hooks/useFetch"; // Adjust the path as necessary
 
 const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500"; // Base URL for images
 
-const MoviesScreen = () => {
-  const { data, error, isLoading } = useTMDB("/movie/popular", {
+const TopRatedMovies = () => {
+  const { data, error, isLoading } = useTMDB("/movie/top_rated", {
     language: "en-US",
     page: 1,
   });
@@ -27,9 +27,10 @@ const MoviesScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Popular Movies</Text>
+      <Text style={styles.title}>Top Rated</Text>
       <FlatList
-        data={data.results}
+        horizontal={true}
+        data={data.results.slice(0, 10)}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View>
@@ -60,6 +61,8 @@ const styles = StyleSheet.create({
   movieTitle: {
     fontSize: 18,
     marginVertical: 8,
+    maxWidth: 150,
+    textAlign: "center",
   },
   errorText: {
     color: "red",
@@ -73,4 +76,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MoviesScreen;
+export default TopRatedMovies;
