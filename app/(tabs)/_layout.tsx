@@ -12,11 +12,11 @@ const TabsLayout = () => {
         }}
       />
       <Tabs.Screen
-        name="users/[id]"
+        name="comingSoon"
         options={{
-          headerTitle: "User Page",
+          headerTitle: "Coming Soon",
           headerTitleAlign: "center",
-          title: `User`,
+          title: `Coming Soon`,
         }}
       />
     </Tabs>
