@@ -38,6 +38,7 @@ const TabsLayout = () => {
           title: `Coming Soon`,
         }}
       />
+      {/* Hide movies/[id] */}
     </Tabs>
   );
 };
