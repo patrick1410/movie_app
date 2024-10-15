@@ -1,11 +1,7 @@
-import { Text, View } from "react-native";
+import Upcoming from "../../components/Upcoming";
 
 const ComingSoonPage = () => {
-  return (
-    <View>
-      <Text>Coming Soon!</Text>
-    </View>
-  );
+  return <Upcoming />;
 };
 
 export default ComingSoonPage;

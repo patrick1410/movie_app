@@ -12,6 +12,7 @@ const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500"; // Base URL for i
 
 const TopRatedMovies = () => {
   const { data, error, isLoading } = useTMDB("/movie/top_rated", {
+    primary_release_year: 2024,
     language: "en-US",
     page: 1,
   });
@@ -30,6 +31,7 @@ const TopRatedMovies = () => {
       <Text style={styles.title}>Top Rated</Text>
       <FlatList
         horizontal={true}
+        showsHorizontalScrollIndicator={false}
         data={data.results.slice(0, 10)}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
@@ -39,7 +41,6 @@ const TopRatedMovies = () => {
               style={styles.poster}
               resizeMode="cover"
             />
-            <Text style={styles.movieTitle}>{item.title}</Text>
           </View>
         )}
       />
@@ -58,12 +59,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 16,
   },
-  movieTitle: {
-    fontSize: 18,
-    marginVertical: 8,
-    maxWidth: 150,
-    textAlign: "center",
-  },
+
   errorText: {
     color: "red",
     textAlign: "center",
@@ -73,6 +69,7 @@ const styles = StyleSheet.create({
     width: 150, // Set width for the poster
     height: 225, // Set height for the poster
     borderRadius: 8, // Optional: Round the corners
+    marginHorizontal: 8,
   },
 });
 

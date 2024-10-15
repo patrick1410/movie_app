@@ -10,8 +10,8 @@ import useTMDB from "../hooks/useFetch"; // Adjust the path as necessary
 
 const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500"; // Base URL for images
 
-const PopularMovies = () => {
-  const { data, error, isLoading } = useTMDB("/movie/popular", {
+const Upcoming = () => {
+  const { data, error, isLoading } = useTMDB("/movie/upcoming", {
     language: "en-US",
     page: 1,
   });
@@ -27,9 +27,8 @@ const PopularMovies = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Popular Movies</Text>
+      <Text style={styles.title}>Upcoming</Text>
       <FlatList
-        horizontal={true}
         showsHorizontalScrollIndicator={false}
         data={data.results}
         keyExtractor={(item) => item.id.toString()}
@@ -67,8 +66,8 @@ const styles = StyleSheet.create({
     width: 150, // Set width for the poster
     height: 225, // Set height for the poster
     borderRadius: 8, // Optional: Round the corners
-    marginHorizontal: 8,
+    marginVertical: 8,
   },
 });
 
-export default PopularMovies;
+export default Upcoming;
