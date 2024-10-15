@@ -10,9 +10,12 @@ import useTMDB from "../hooks/useFetch"; // Adjust the path as necessary
 
 const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500"; // Base URL for images
 
+//https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=true&language=en-US&page=1&primary_release_year=2024&sort_by=popularity.desc'
 const TopRatedMovies = () => {
-  const { data, error, isLoading } = useTMDB("/movie/top_rated", {
+  const { data, error, isLoading } = useTMDB("/discover/movie", {
+    include_video: true,
     primary_release_year: 2024,
+    sort_by: "vote_count.desc",
     language: "en-US",
     page: 1,
   });
@@ -28,11 +31,11 @@ const TopRatedMovies = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Top Rated</Text>
+      <Text style={styles.title}>Top Rated 2024</Text>
       <FlatList
         horizontal={true}
         showsHorizontalScrollIndicator={false}
-        data={data.results.slice(0, 10)}
+        data={data.results}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View>
@@ -51,7 +54,6 @@ const TopRatedMovies = () => {
 // Basic styling
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding: 16,
   },
   title: {

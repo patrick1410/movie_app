@@ -5,7 +5,9 @@ import {
   ActivityIndicator,
   Image,
   StyleSheet,
+  Pressable,
 } from "react-native";
+import { router } from "expo-router";
 import useTMDB from "../hooks/useFetch"; // Adjust the path as necessary
 
 const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500"; // Base URL for images
@@ -34,13 +36,22 @@ const PopularMovies = () => {
         data={data.results}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <View>
-            <Image
-              source={{ uri: `${TMDB_IMAGE_BASE_URL}${item.poster_path}` }}
-              style={styles.poster}
-              resizeMode="cover"
-            />
-          </View>
+          <Pressable
+            onPress={() =>
+              router.push({
+                pathname: "/movies/[id]",
+                params: { id: item.id },
+              })
+            }
+          >
+            <View>
+              <Image
+                source={{ uri: `${TMDB_IMAGE_BASE_URL}${item.poster_path}` }}
+                style={styles.poster}
+                resizeMode="cover"
+              />
+            </View>
+          </Pressable>
         )}
       />
     </View>
@@ -50,7 +61,6 @@ const PopularMovies = () => {
 // Basic styling
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding: 16,
   },
   title: {
