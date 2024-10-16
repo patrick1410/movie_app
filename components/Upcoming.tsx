@@ -5,7 +5,9 @@ import {
   ActivityIndicator,
   Image,
   StyleSheet,
+  Pressable,
 } from "react-native";
+import { router } from "expo-router";
 import useTMDB from "../hooks/useFetch"; // Adjust the path as necessary
 
 const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500"; // Base URL for images
@@ -15,6 +17,13 @@ const Upcoming = () => {
     language: "en-US",
     page: 1,
   });
+
+  // CODE FOR LATER!
+  // Get today's date
+  //  const today = new Date().toISOString().split('T')[0]; // Get YYYY-MM-DD format
+
+  // Filter movies that are not yet released
+  //const upcomingMovies = data.results.filter(movie => movie.release_date >= today);
 
   if (isLoading) return <ActivityIndicator size="large" color="#0000ff" />;
 
@@ -33,13 +42,30 @@ const Upcoming = () => {
         data={data.results}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <View>
-            <Image
-              source={{ uri: `${TMDB_IMAGE_BASE_URL}${item.poster_path}` }}
-              style={styles.poster}
-              resizeMode="cover"
-            />
-          </View>
+          <Pressable
+            onPress={() =>
+              router.push({
+                pathname: "/movies/[id]",
+                params: {
+                  id: item.id,
+                  title: item.title,
+                  overview: item.overview,
+                  vote_average: item.vote_average,
+                  release_date: item.release_date,
+                  backdrop_path: item.backdrop_path,
+                  genre_ids: item.genre_ids,
+                },
+              })
+            }
+          >
+            <View>
+              <Image
+                source={{ uri: `${TMDB_IMAGE_BASE_URL}${item.poster_path}` }}
+                style={styles.poster}
+                resizeMode="cover"
+              />
+            </View>
+          </Pressable>
         )}
       />
     </View>

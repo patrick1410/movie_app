@@ -42,9 +42,7 @@ const TabsLayout = () => {
       <Tabs.Screen
         name="movies/[id]"
         options={{
-          headerTitle: "Coming Soon",
-          headerTitleAlign: "center",
-          title: `Coming Soon`,
+          headerShown: false,
           href: null,
         }}
       />

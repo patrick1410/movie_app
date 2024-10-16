@@ -27,6 +27,8 @@ const PopularMovies = () => {
       </Text>
     );
 
+  console.log(data.results[0]);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Popular Movies</Text>
@@ -40,7 +42,15 @@ const PopularMovies = () => {
             onPress={() =>
               router.push({
                 pathname: "/movies/[id]",
-                params: { id: item.id },
+                params: {
+                  id: item.id,
+                  title: item.title,
+                  overview: item.overview,
+                  vote_average: item.vote_average,
+                  release_date: item.release_date,
+                  backdrop_path: item.backdrop_path,
+                  genre_ids: item.genre_ids,
+                },
               })
             }
           >
