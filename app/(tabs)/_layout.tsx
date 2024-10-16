@@ -38,7 +38,16 @@ const TabsLayout = () => {
           title: `Coming Soon`,
         }}
       />
-      {/* Hide movies/[id] */}
+      {/* movies/[id] is hidden */}
+      <Tabs.Screen
+        name="movies/[id]"
+        options={{
+          headerTitle: "Coming Soon",
+          headerTitleAlign: "center",
+          title: `Coming Soon`,
+          href: null,
+        }}
+      />
     </Tabs>
   );
 };
