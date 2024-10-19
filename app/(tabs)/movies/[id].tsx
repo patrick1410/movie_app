@@ -16,13 +16,15 @@ const MoviePage = () => {
     backdrop_path,
   } = useLocalSearchParams();
 
+  const rating = Number(vote_average);
+
   return (
     <SafeAreaView>
       <View>
         <Text>Movie Page - {id}</Text>
         <Text>title - {title}</Text>
         <Text>overview - {overview}</Text>
-        <Text>rating - {Number(vote_average).toFixed(1)}</Text>
+        {rating !== 0 && <Text>rating - {rating.toFixed(1)}</Text>}
         <Text>release_date - {release_date}</Text>
         <Text>genres {genre_ids}</Text>
         <Image

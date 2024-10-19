@@ -13,10 +13,17 @@ import useTMDB from "../hooks/useFetch"; // Adjust the path as necessary
 const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500"; // Base URL for images
 
 const PopularMovies = () => {
-  const { data, error, isLoading } = useTMDB("/movie/popular", {
-    language: "en-US",
-    page: 1,
-  });
+  const {
+    data: movies,
+    error,
+    isLoading,
+    hasNextPage,
+    fetchNextPage,
+  } = useTMDB("/movie/popular");
+
+  const onReachEnd = () => {
+    if (hasNextPage) fetchNextPage();
+  };
 
   if (isLoading) return <ActivityIndicator size="large" color="#0000ff" />;
 
@@ -27,16 +34,16 @@ const PopularMovies = () => {
       </Text>
     );
 
-  console.log(data.results[0]);
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Popular Movies</Text>
       <FlatList
         horizontal={true}
         showsHorizontalScrollIndicator={false}
-        data={data.results}
-        keyExtractor={(item) => item.id.toString()}
+        data={movies?.pages.flatMap((page) => page.results)}
+        onEndReached={onReachEnd}
+        onEndReachedThreshold={0.5}
+        keyExtractor={(item, i) => `${item.id.toString()}${i}`}
         renderItem={({ item }) => (
           <Pressable
             onPress={() =>
@@ -77,6 +84,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 16,
+    marginLeft: 8,
   },
   errorText: {
     color: "red",

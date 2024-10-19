@@ -14,13 +14,22 @@ const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500"; // Base URL for i
 
 //https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=true&language=en-US&page=1&primary_release_year=2024&sort_by=popularity.desc'
 const TopRatedMovies = () => {
-  const { data, error, isLoading } = useTMDB("/discover/movie", {
+  const {
+    data: movies,
+    error,
+    isLoading,
+    hasNextPage,
+    fetchNextPage,
+  } = useTMDB("/discover/movie", {
     include_video: true,
     primary_release_year: 2024,
     sort_by: "vote_count.desc",
     language: "en-US",
-    page: 1,
   });
+
+  const onReachEnd = () => {
+    if (hasNextPage) fetchNextPage();
+  };
 
   if (isLoading) return <ActivityIndicator size="large" color="#0000ff" />;
 
@@ -37,8 +46,10 @@ const TopRatedMovies = () => {
       <FlatList
         horizontal={true}
         showsHorizontalScrollIndicator={false}
-        data={data.results}
-        keyExtractor={(item) => item.id.toString()}
+        data={movies?.pages.flatMap((page) => page.results)}
+        onEndReached={onReachEnd}
+        onEndReachedThreshold={0.5}
+        keyExtractor={(item, i) => `${item.id.toString()}${i}`}
         renderItem={({ item }) => (
           <Pressable
             onPress={() =>
@@ -79,6 +90,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 16,
+    marginLeft: 8,
   },
 
   errorText: {

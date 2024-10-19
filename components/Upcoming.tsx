@@ -9,21 +9,37 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import useTMDB from "../hooks/useFetch"; // Adjust the path as necessary
+import { getToday, getNextYear } from "../utils/getDates";
 
 const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500"; // Base URL for images
 
 const Upcoming = () => {
-  const { data, error, isLoading } = useTMDB("/movie/upcoming", {
+  const {
+    data: movies,
+    error,
+    isLoading,
+    hasNextPage,
+    fetchNextPage,
+  } = useTMDB("/discover/movie", {
+    include_video: true,
     language: "en-US",
-    page: 1,
+    "primary_release_date.gte": getToday(), // Set's min (today)
+    "primary_release_date.lte": getNextYear(), // Set's max (a year)
+    with_companies: "372|33|25|174|4|7|2|37|5|18|168|24|101|9996|9994", // Important companies
+    sort_by: "popularity.desc",
   });
 
-  // CODE FOR LATER!
-  // Get today's date
-  //  const today = new Date().toISOString().split('T')[0]; // Get YYYY-MM-DD format
+  const upcomingMovies = movies?.pages.flatMap((page) => page.results);
 
-  // Filter movies that are not yet released
-  //const upcomingMovies = data.results.filter(movie => movie.release_date >= today);
+  // Filter movies to exclude those without neccesary information
+  const filteredMovies = upcomingMovies?.filter(
+    ({ poster_path, backdrop_path, overview, genre_ids }) =>
+      poster_path && backdrop_path && overview && genre_ids
+  );
+
+  const onReachEnd = () => {
+    if (hasNextPage) fetchNextPage();
+  };
 
   if (isLoading) return <ActivityIndicator size="large" color="#0000ff" />;
 
@@ -38,9 +54,11 @@ const Upcoming = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Upcoming</Text>
       <FlatList
-        showsHorizontalScrollIndicator={false}
-        data={data.results}
-        keyExtractor={(item) => item.id.toString()}
+        showsVerticalScrollIndicator={false}
+        data={filteredMovies}
+        onEndReached={onReachEnd}
+        onEndReachedThreshold={0.5}
+        keyExtractor={(item, i) => `${item.id.toString()}${i}`}
         renderItem={({ item }) => (
           <Pressable
             onPress={() =>
@@ -80,7 +98,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 16,
+    marginBottom: 8,
   },
   errorText: {
     color: "red",
