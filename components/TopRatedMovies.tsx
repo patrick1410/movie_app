@@ -8,11 +8,10 @@ import {
   Pressable,
 } from "react-native";
 import { router } from "expo-router";
-import useTMDB from "../hooks/useFetch"; // Adjust the path as necessary
+import useTMDB from "../hooks/useFetch";
 
 const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500"; // Base URL for images
 
-//https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=true&language=en-US&page=1&primary_release_year=2024&sort_by=popularity.desc'
 const TopRatedMovies = () => {
   const {
     data: movies,

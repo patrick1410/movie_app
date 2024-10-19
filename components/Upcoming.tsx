@@ -8,7 +8,7 @@ import {
   Pressable,
 } from "react-native";
 import { router } from "expo-router";
-import useTMDB from "../hooks/useFetch"; // Adjust the path as necessary
+import useTMDB from "../hooks/useFetch";
 import { getToday, getNextYear } from "../utils/getDates";
 
 const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500"; // Base URL for images
