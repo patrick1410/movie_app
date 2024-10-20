@@ -1,4 +1,9 @@
-export const GENRES = [
+interface Genre {
+  id: number;
+  name: string;
+}
+
+export const GENRES: Genre[] = [
   {
     id: 28,
     name: "Action",
@@ -57,7 +62,7 @@ export const GENRES = [
   },
   {
     id: 878,
-    name: "Science Fiction",
+    name: "Science-Fiction",
   },
   {
     id: 10770,
