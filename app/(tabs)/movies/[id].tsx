@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { getGenreNames } from "../../../utils/getGenreNames";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { WebView } from "react-native-webview";
 
 const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
 
@@ -41,10 +42,24 @@ https://api.themoviedb.org/3/movie/${id}/videos?api_key=ebce74cb934fc3d8fd857229
     queryFn: () => fetchTrailer(),
   });
 
-  console.log(trailer?.results);
+  const officialTrailer = trailer?.results?.filter(
+    (result) => result?.name === "Official Trailer"
+  );
 
+  console.log("id:", id);
+  console.log("trailerkey:", officialTrailer[0].key);
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ flex: 1 }}>
+      {/* Backdrop IMG */}
+      <View>
+        <Image
+          source={{ uri: `${TMDB_IMAGE_BASE_URL}${backdrop_path}` }}
+          resizeMode="cover"
+          style={{ width: "100%", height: 200 }} // Adjust size as needed
+        />
+      </View>
+
+      {/* Details */}
       <View>
         <Text>Movie Page - {id}</Text>
         <Text>title - {title}</Text>
@@ -52,12 +67,13 @@ https://api.themoviedb.org/3/movie/${id}/videos?api_key=ebce74cb934fc3d8fd857229
         {rating !== 0 && <Text>rating - {rating.toFixed(1)}</Text>}
         <Text>release_date - {release_date}</Text>
         <Text>genres {genreNames.join(", ")}</Text>
-        <Image
-          source={{ uri: `${TMDB_IMAGE_BASE_URL}${backdrop_path}` }}
-          resizeMode="cover"
-          style={{ width: "100%", height: 200 }} // Adjust size as needed
-        />
       </View>
+
+      {/* Trailer */}
+      <WebView
+        source={{ uri: "https://reactnative.dev/" }}
+        style={{ height: "100%", width: "100%" }}
+      />
     </SafeAreaView>
   );
 };
