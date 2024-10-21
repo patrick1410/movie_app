@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from "expo-router";
-import { Text, View, Image } from "react-native";
+import { Text, View, Image, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getGenreNames } from "../../../utils/getGenreNames";
 import { useQuery } from "@tanstack/react-query";
@@ -33,21 +33,28 @@ https://api.themoviedb.org/3/movie/${id}/videos?api_key=ebce74cb934fc3d8fd857229
     return response.data;
   };
 
+  const movieId = id;
+
   const {
     data: trailer,
     error,
     isLoading,
   } = useQuery({
-    queryKey: ["trailer"],
-    queryFn: () => fetchTrailer(),
+    queryKey: ["trailer", movieId],
+    queryFn: fetchTrailer,
+    gcTime: 0,
   });
+  console.log("ID:", movieId);
+  // const officialTrailer = trailer?.results?.filter(
+  //   (result) => result?.name === "Trailer"
+  // );
 
-  const officialTrailer = trailer?.results?.filter(
-    (result) => result?.name === "Official Trailer"
-  );
+  // console.log("ID:", id);
 
-  console.log("id:", id);
-  console.log("trailerkey:", officialTrailer[0].key);
+  // trailerKey is undefined the first time rendering thats why can't filter
+  const trailerKey = trailer?.results[0].key;
+  console.log("KEY:", trailerKey);
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       {/* Backdrop IMG */}
@@ -66,16 +73,45 @@ https://api.themoviedb.org/3/movie/${id}/videos?api_key=ebce74cb934fc3d8fd857229
         <Text>overview - {overview}</Text>
         {rating !== 0 && <Text>rating - {rating.toFixed(1)}</Text>}
         <Text>release_date - {release_date}</Text>
-        <Text>genres {genreNames.join(", ")}</Text>
+        <Text>
+          {genreNames.length > 1 ? "Genres:" : "Genre:"} {genreNames.join(", ")}
+        </Text>
       </View>
 
-      {/* Trailer */}
-      <WebView
-        source={{ uri: "https://reactnative.dev/" }}
-        style={{ height: "100%", width: "100%" }}
-      />
+      {/*States & Trailer */}
+      {isLoading && (
+        <View>
+          <Text style={{ fontWeight: "bold", textAlign: "center" }}>
+            Loading Trailer...
+          </Text>
+        </View>
+      )}
+
+      {error && (
+        <View>
+          <Text style={styles.errorText}>
+            Error fetching Trailer: {error.message}
+          </Text>
+        </View>
+      )}
+
+      {trailerKey && (
+        <WebView
+          source={{ uri: `https://www.youtube.com/embed/${trailerKey}` }}
+          style={{ height: "100%", width: "100%" }}
+        />
+      )}
     </SafeAreaView>
   );
 };
+
+// Basic styling
+const styles = StyleSheet.create({
+  errorText: {
+    color: "red",
+    textAlign: "center",
+    marginTop: 20,
+  },
+});
 
 export default MoviePage;
