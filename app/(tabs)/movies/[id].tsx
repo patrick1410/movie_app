@@ -14,7 +14,6 @@ const MoviePage = () => {
     genre_ids,
     title,
     overview,
-    poster_path,
     vote_average,
     release_date,
     backdrop_path,
@@ -56,13 +55,13 @@ https://api.themoviedb.org/3/movie/${id}/videos?api_key=ebce74cb934fc3d8fd857229
   console.log("KEY:", trailerKey);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={styles.container}>
       {/* Backdrop IMG */}
       <View>
         <Image
           source={{ uri: `${TMDB_IMAGE_BASE_URL}${backdrop_path}` }}
           resizeMode="cover"
-          style={{ width: "100%", height: 200 }} // Adjust size as needed
+          style={styles.backdropImage} // Adjust size as needed
         />
       </View>
 
@@ -81,9 +80,7 @@ https://api.themoviedb.org/3/movie/${id}/videos?api_key=ebce74cb934fc3d8fd857229
       {/*States & Trailer */}
       {isLoading && (
         <View>
-          <Text style={{ fontWeight: "bold", textAlign: "center" }}>
-            Loading Trailer...
-          </Text>
+          <Text style={styles.loadingText}>Loading Trailer...</Text>
         </View>
       )}
 
@@ -98,7 +95,7 @@ https://api.themoviedb.org/3/movie/${id}/videos?api_key=ebce74cb934fc3d8fd857229
       {trailerKey && (
         <WebView
           source={{ uri: `https://www.youtube.com/embed/${trailerKey}` }}
-          style={{ height: "100%", width: "100%" }}
+          style={styles.webView}
         />
       )}
     </SafeAreaView>
@@ -107,11 +104,18 @@ https://api.themoviedb.org/3/movie/${id}/videos?api_key=ebce74cb934fc3d8fd857229
 
 // Basic styling
 const styles = StyleSheet.create({
+  container: { flex: 1 },
+  backdropImage: { width: "100%", height: 200 },
+  loadingText: {
+    fontWeight: "bold",
+    textAlign: "center",
+  },
   errorText: {
     color: "red",
     textAlign: "center",
     marginTop: 20,
   },
+  webView: { height: "100%", width: "100%", backgroundColor: "default" },
 });
 
 export default MoviePage;
