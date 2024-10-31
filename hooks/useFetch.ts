@@ -1,9 +1,10 @@
+import { API_KEY } from "@env"; // import API_KEY
 import { useInfiniteQuery } from "@tanstack/react-query";
 import axios from "axios";
+console.log(API_KEY);
 
 // Base URL for the TMDB API
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
-const API_KEY = "ebce74cb934fc3d8fd8572292fb217a9"; // Replace with your actual API key
 
 // Function to fetch data from the TMDB API
 const fetchFromTMDB = async (
