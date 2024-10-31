@@ -56,12 +56,6 @@ const TopRatedMovies = () => {
                 pathname: "/movies/[id]",
                 params: {
                   id: item.id,
-                  title: item.title,
-                  overview: item.overview,
-                  vote_average: item.vote_average,
-                  release_date: item.release_date,
-                  backdrop_path: item.backdrop_path,
-                  genre_ids: item.genre_ids,
                 },
               })
             }
