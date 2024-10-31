@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { WebView } from "react-native-webview";
+import { contentRating } from "../../../constants/contentRating";
 
 const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
 
@@ -85,6 +86,14 @@ https://api.themoviedb.org/3/movie/${id}/videos?api_key=ebce74cb934fc3d8fd857229
 
   console.log("ID:", id);
 
+  // Find the corresponding content rating icon based on the age
+  const ageRatingIcon = contentRating.find(
+    (rating) => rating.name === age
+  )?.icon;
+
+  const contentRatingIcon = (descriptor: string) =>
+    contentRating.find((rating) => rating.name === descriptor)?.icon;
+
   // trailerKey is undefined the first time rendering thats why can't filter
   const trailerKey = trailer?.results[0]?.key;
   console.log("KEY:", trailerKey);
@@ -93,21 +102,21 @@ https://api.themoviedb.org/3/movie/${id}/videos?api_key=ebce74cb934fc3d8fd857229
 
   if (movieLoader || certiLoader || trailerLoader)
     return (
-      <View>
+      <SafeAreaView>
         <Text>Loading...</Text>
-      </View>
+      </SafeAreaView>
     );
 
   if (movieError || certiError || trailerError)
     return (
-      <View>
+      <SafeAreaView>
         <Text>
           Error:
           {movieError && movieError.message}
           {certiError && certiError.message}
           {trailerError && trailerError.message}
         </Text>
-      </View>
+      </SafeAreaView>
     );
 
   return (
@@ -120,25 +129,89 @@ https://api.themoviedb.org/3/movie/${id}/videos?api_key=ebce74cb934fc3d8fd857229
         />
       </View>
 
-      {/* Details */}
-      <View>
-        <Text>Title: {movie.title}</Text>
-        <Text>
+      {/* TITLE / CONTENT RATING */}
+      <View style={styles.contentIconBox}>
+        <View>
+          <Text style={styles.header}>{movie.title}</Text>
+        </View>
+
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          {age && (
+            <View>
+              {ageRatingIcon && (
+                <Image
+                  source={{ uri: `${ageRatingIcon}` }}
+                  style={{ width: 24, height: 24 }}
+                />
+              )}
+            </View>
+          )}
+
+          {/* Render descriptors and their corresponding icons */}
+          {descriptors?.length > 0 && (
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              {/* Array to keep track of unique icons */}
+              {descriptors
+                .reduce((uniqueIcons, descriptor) => {
+                  const icon = contentRatingIcon(descriptor); // Get the icon for each descriptor
+                  // Check if the icon is not already in the uniqueIcons array
+                  if (
+                    icon &&
+                    !uniqueIcons.some((uniqueIcon) => uniqueIcon === icon)
+                  ) {
+                    uniqueIcons.push(icon); // Add the unique icon to the array
+                  }
+                  return uniqueIcons; // Return the array of unique icons
+                }, [])
+                .map(
+                  (
+                    icon,
+                    i // Map over unique icons to render them
+                  ) => (
+                    <Image
+                      key={i} // Use index as key, though ideally, a unique identifier is better
+                      source={{ uri: icon }} // Render the icon
+                      style={{ width: 24, height: 24 }}
+                    />
+                  )
+                )}
+            </View>
+          )}
+        </View>
+      </View>
+
+      {/* <Text>
           {movie.production_companies?.length > 1 ? "Companies: " : "Company: "}
           {movie.production_companies?.map(({ name }: any) => name).join(", ")}
-        </Text>
-        <Text>Rating: {Number(movie.vote_average).toFixed(1)}</Text>
-        <Text>Runtime: {movie.runtime} minutes</Text>
-        <Text>Country: {movie.origin_country[0]}</Text>
-        <Text>Language: {movie.original_language.toUpperCase()}</Text>
+        </Text> */}
+
+      {/* OTHER DETAILS */}
+
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          paddingVertical: 8,
+        }}
+      >
+        <View>
+          <Text>Rating: {Number(movie.vote_average).toFixed(1)}</Text>
+          <Text>Runtime: {movie.runtime} minutes</Text>
+          <Text>Country: {movie.origin_country[0]}</Text>
+          <Text>Language: {movie.original_language.toUpperCase()}</Text>
+        </View>
+        <View>
+          <Text>
+            Genres: {movie.genres.map(({ name }: any) => name).join(", ")}
+          </Text>
+          <Text>Release Date: {movie.release_date}</Text>
+        </View>
+        {/* Render the content rating image */}
+      </View>
+
+      <View>
         <Text>Overview: {movie.overview}</Text>
-        <Text>
-          Genres: {movie.genres.map(({ name }: any) => name).join(", ")}
-        </Text>
-        <Text>Release Date: {movie.release_date}</Text>
-        <Text>IMDB-ID: {movie.imdb_id}</Text>
-        {age && <Text>{age === "0" ? "PG" : `PG ${age}`}</Text>}
-        {descriptors?.length > 0 && <Text>{descriptors.join(", ")}</Text>}
       </View>
 
       {/* Trailer */}
@@ -157,6 +230,7 @@ https://api.themoviedb.org/3/movie/${id}/videos?api_key=ebce74cb934fc3d8fd857229
 // Basic styling
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  header: { fontSize: 24, fontWeight: "bold" },
   backdropImage: { width: "100%", height: 200 },
   loadingText: {
     fontWeight: "bold",
@@ -168,6 +242,14 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   webView: { height: "100%", width: "100%", backgroundColor: "default" },
+  ratingIcon: {
+    width: 24, // Adjust as needed
+    height: 24, // Adjust as needed
+  },
+  contentIconBox: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
 });
 
 export default MoviePage;
