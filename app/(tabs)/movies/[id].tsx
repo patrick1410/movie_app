@@ -102,7 +102,10 @@ https://api.themoviedb.org/3/movie/${id}/videos?api_key=ebce74cb934fc3d8fd857229
     return (
       <View>
         <Text>
-          Error: {movieError ? movieError.message : trailerError?.message}
+          Error:
+          {movieError && movieError.message}
+          {certiError && certiError.message}
+          {trailerError && trailerError.message}
         </Text>
       </View>
     );
@@ -121,8 +124,8 @@ https://api.themoviedb.org/3/movie/${id}/videos?api_key=ebce74cb934fc3d8fd857229
       <View>
         <Text>Title: {movie.title}</Text>
         <Text>
-          {movie.production_companies.length > 1 ? "Companies: " : "Company: "}
-          {movie.production_companies.map(({ name }: any) => name).join(", ")}
+          {movie.production_companies?.length > 1 ? "Companies: " : "Company: "}
+          {movie.production_companies?.map(({ name }: any) => name).join(", ")}
         </Text>
         <Text>Rating: {Number(movie.vote_average).toFixed(1)}</Text>
         <Text>Runtime: {movie.runtime} minutes</Text>
@@ -134,8 +137,8 @@ https://api.themoviedb.org/3/movie/${id}/videos?api_key=ebce74cb934fc3d8fd857229
         </Text>
         <Text>Release Date: {movie.release_date}</Text>
         <Text>IMDB-ID: {movie.imdb_id}</Text>
-        {age && <Text>{age}</Text>}
-        {descriptors && <Text>{descriptors}</Text>}
+        {age && <Text>{age === "0" ? "PG" : `PG ${age}`}</Text>}
+        {descriptors?.length > 0 && <Text>{descriptors.join(", ")}</Text>}
       </View>
 
       {/* Trailer */}
