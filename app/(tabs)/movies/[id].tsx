@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from "expo-router";
-import { Text, View, Image, StyleSheet } from "react-native";
+import { Text, View, Image, StyleSheet, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -8,9 +8,25 @@ import { contentRating } from "../../../constants/contentRating";
 
 const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
 
+// types
+type RatingProps = { name: string; icon: string };
+type ItemProp = { name: string };
+type TrailerProp = {
+  name: string;
+};
+
 const MoviePage = () => {
+  // get id
   const { id } = useLocalSearchParams();
 
+  // render genres for flatlist
+  const renderGenres = ({ item }: { item: ItemProp }) => (
+    <View>
+      <Text>{item.name}</Text>
+    </View>
+  );
+
+  // funcs
   const fetchMovieById = async () => {
     try {
       const response = await axios.get(
@@ -22,7 +38,7 @@ const MoviePage = () => {
     }
   };
 
-  const fetchCerti = async () => {
+  const fetchCertification = async () => {
     try {
       const response = await axios.get(
         `https://api.themoviedb.org/3/movie/${id}/release_dates?api_key=ebce74cb934fc3d8fd8572292fb217a9`
@@ -53,6 +69,7 @@ https://api.themoviedb.org/3/movie/${id}/images?api_key=ebce74cb934fc3d8fd857229
     }
   };
 
+  // queries
   const movie = useQuery({
     queryKey: ["movie", id],
     queryFn: fetchMovieById,
@@ -63,9 +80,9 @@ https://api.themoviedb.org/3/movie/${id}/images?api_key=ebce74cb934fc3d8fd857229
     queryFn: fetchImages,
     gcTime: 0,
   });
-  const certi = useQuery({
+  const certifications = useQuery({
     queryKey: ["certification", id],
-    queryFn: fetchCerti,
+    queryFn: fetchCertification,
     gcTime: 0,
   });
   const trailer = useQuery({
@@ -74,20 +91,20 @@ https://api.themoviedb.org/3/movie/${id}/images?api_key=ebce74cb934fc3d8fd857229
     gcTime: 0,
   });
 
-  const certifi = certi?.data?.results?.filter(
+  const DE_certification = certifications?.data?.results?.filter(
     (certi: any) => certi.iso_3166_1 === "DE"
   );
 
-  const age = certifi?.[0]?.release_dates?.[0]?.certification;
+  const age = DE_certification?.[0]?.release_dates?.[0]?.certification;
 
-  const descriptors = certifi?.[0]?.release_dates?.[0]?.descriptors;
+  const descriptors = DE_certification?.[0]?.release_dates?.[0]?.descriptors;
 
   const logo_path = images?.data?.logos[0]?.file_path;
   console.log(images?.data?.logos);
 
   // Find the corresponding content rating icon based on the age
   const ageRatingIcon = contentRating.find(
-    (rating) => rating.name === age
+    (rating: RatingProps) => rating.name === age
   )?.icon;
 
   const rating = movie?.data?.vote_average;
@@ -96,13 +113,17 @@ https://api.themoviedb.org/3/movie/${id}/images?api_key=ebce74cb934fc3d8fd857229
   const contentRatingIcon = (descriptor: string) =>
     contentRating.find((rating) => rating.name === descriptor)?.icon;
 
-  // trailerKey is undefined the first time rendering thats why can't filter
-  const trailerKey = trailer?.data?.results[0]?.key;
+  const trailerUrl = trailer?.data?.results?.find(
+    (trailer: TrailerProp) =>
+      trailer.name.includes("Official Trailer") ||
+      trailer.name.includes("Trailer")
+  );
 
+  // loading state
   if (
     movie.isLoading ||
     images.isLoading ||
-    certi.isLoading ||
+    certifications.isLoading ||
     trailer.isLoading
   )
     return (
@@ -111,19 +132,26 @@ https://api.themoviedb.org/3/movie/${id}/images?api_key=ebce74cb934fc3d8fd857229
       </SafeAreaView>
     );
 
-  if (movie.isError || images.isError || certi.isError || trailer.isError)
+  // error state
+  if (
+    movie.isError ||
+    images.isError ||
+    certifications.isError ||
+    trailer.isError
+  )
     return (
       <SafeAreaView>
         <Text>
           Error:
           {movie.isError && movie.error.message}
           {images.isError && images.error.message}
-          {certi.isError && certi.error.message}
+          {certifications.isError && certifications.error.message}
           {trailer.isError && trailer.error.message}
         </Text>
       </SafeAreaView>
     );
 
+  // screen
   return (
     <SafeAreaView style={styles.container}>
       {/* Backdrop Image */}
@@ -163,29 +191,26 @@ https://api.themoviedb.org/3/movie/${id}/images?api_key=ebce74cb934fc3d8fd857229
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               {/* Array to keep track of unique icons */}
               {descriptors
-                .reduce((uniqueIcons, descriptor) => {
+                .reduce((uniqueIcons: string[], descriptor: string) => {
                   const icon = contentRatingIcon(descriptor); // Get the icon for each descriptor
                   // Check if the icon is not already in the uniqueIcons array
                   if (
                     icon &&
-                    !uniqueIcons.some((uniqueIcon) => uniqueIcon === icon)
+                    !uniqueIcons.some(
+                      (uniqueIcon: string) => uniqueIcon === icon
+                    )
                   ) {
                     uniqueIcons.push(icon); // Add the unique icon to the array
                   }
                   return uniqueIcons; // Return the array of unique icons
                 }, [])
-                .map(
-                  (
-                    icon,
-                    i // Map over unique icons to render them
-                  ) => (
-                    <Image
-                      key={i} // Use index as key, though ideally, a unique identifier is better
-                      source={{ uri: icon }} // Render the icon
-                      style={{ width: 24, height: 24 }}
-                    />
-                  )
-                )}
+                .map((icon: string, i: number) => (
+                  <Image
+                    key={i} // Use index as key, though ideally, a unique identifier is better
+                    source={{ uri: icon }} // Render the icon
+                    style={{ width: 24, height: 24 }}
+                  />
+                ))}
             </View>
           )}
         </View>
@@ -200,7 +225,7 @@ https://api.themoviedb.org/3/movie/${id}/images?api_key=ebce74cb934fc3d8fd857229
           paddingVertical: 8,
         }}
       >
-        <View>
+        <View style={{ paddingHorizontal: 8 }}>
           <Text>
             Rating: {rating === 0 ? "T.B.A." : Number(rating).toFixed(1)}
           </Text>
@@ -210,28 +235,27 @@ https://api.themoviedb.org/3/movie/${id}/images?api_key=ebce74cb934fc3d8fd857229
           <Text>Country: {movie?.data?.origin_country[0]}</Text>
           <Text>Language: {movie?.data?.original_language.toUpperCase()}</Text>
         </View>
-        <View>
-          <Text>
-            Genres:
-            {movie?.data?.genres.map(({ name }: any) => name).join(", ")}
-          </Text>
+
+        <View style={{ flexDirection: "column", marginHorizontal: 8 }}>
+          <Text>Genres:</Text>
+          <FlatList data={movie?.data?.genres} renderItem={renderGenres} />
           <Text>Release Date: {movie?.data?.release_date}</Text>
         </View>
       </View>
 
       {/* Overview */}
       <View>
-        <Text>Overview: {movie?.data?.overview}</Text>
+        <Text style={styles.overview}>Overview: {movie?.data?.overview}</Text>
       </View>
 
       {/* Trailer */}
-      {trailerKey ? (
+      {trailerUrl ? (
         <WebView
-          source={{ uri: `https://www.youtube.com/embed/${trailerKey}` }}
+          source={{ uri: `https://www.youtube.com/embed/${trailerUrl?.key}` }}
           style={styles.webView}
         />
       ) : (
-        <Text>No trailer available</Text>
+        <Text style={{ textAlign: "center" }}>No trailer available</Text>
       )}
     </SafeAreaView>
   );
@@ -259,6 +283,12 @@ const styles = StyleSheet.create({
   contentIconBox: {
     flexDirection: "row",
     justifyContent: "space-between",
+    paddingHorizontal: 8,
+  },
+  overview: {
+    paddingHorizontal: 8,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 
