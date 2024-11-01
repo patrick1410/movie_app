@@ -1,3 +1,4 @@
+import { API_KEY } from "@env"; // import API_KEY
 import { useLocalSearchParams } from "expo-router";
 import { Text, View, Image, StyleSheet, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -30,7 +31,7 @@ const MoviePage = () => {
   const fetchMovieById = async () => {
     try {
       const response = await axios.get(
-        `https://api.themoviedb.org/3/movie/${id}?api_key=ebce74cb934fc3d8fd8572292fb217a9`
+        `https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}`
       );
       return response.data;
     } catch (error) {
@@ -41,7 +42,7 @@ const MoviePage = () => {
   const fetchCertification = async () => {
     try {
       const response = await axios.get(
-        `https://api.themoviedb.org/3/movie/${id}/release_dates?api_key=ebce74cb934fc3d8fd8572292fb217a9`
+        `https://api.themoviedb.org/3/movie/${id}/release_dates?api_key=${API_KEY}`
       );
       return response.data;
     } catch (error) {
@@ -52,7 +53,7 @@ const MoviePage = () => {
   const fetchTrailer = async () => {
     try {
       const response = await axios.get(`
-https://api.themoviedb.org/3/movie/${id}/videos?api_key=ebce74cb934fc3d8fd8572292fb217a9`);
+https://api.themoviedb.org/3/movie/${id}/videos?api_key=${API_KEY}`);
       return response.data;
     } catch (error) {
       console.error("Error fetching trailer: ", error);
@@ -62,7 +63,7 @@ https://api.themoviedb.org/3/movie/${id}/videos?api_key=ebce74cb934fc3d8fd857229
   const fetchImages = async () => {
     try {
       const response = await axios.get(`
-https://api.themoviedb.org/3/movie/${id}/images?api_key=ebce74cb934fc3d8fd8572292fb217a9&include_image_language=en&language=en,null`);
+https://api.themoviedb.org/3/movie/${id}/images?api_key=${API_KEY}&include_image_language=en&language=en,null`);
       return response.data;
     } catch (error) {
       console.error("Error fetching logo: ", error);
