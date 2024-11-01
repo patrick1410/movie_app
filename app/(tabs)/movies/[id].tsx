@@ -11,8 +11,6 @@ const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
 const MoviePage = () => {
   const { id } = useLocalSearchParams();
 
-  console.log(id);
-
   const fetchMovieById = async () => {
     try {
       const response = await axios.get(
@@ -45,94 +43,107 @@ https://api.themoviedb.org/3/movie/${id}/videos?api_key=ebce74cb934fc3d8fd857229
     }
   };
 
-  const {
-    data: movie,
-    isLoading: movieLoader,
-    error: movieError,
-  } = useQuery({
+  const fetchImages = async () => {
+    try {
+      const response = await axios.get(`
+https://api.themoviedb.org/3/movie/${id}/images?api_key=ebce74cb934fc3d8fd8572292fb217a9&include_image_language=en&language=en,null`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching logo: ", error);
+    }
+  };
+
+  const movie = useQuery({
     queryKey: ["movie", id],
     queryFn: fetchMovieById,
     gcTime: 0,
   });
-
-  const {
-    data: certi,
-    isLoading: certiLoader,
-    error: certiError,
-  } = useQuery({
-    queryKey: ["certi", id],
+  const images = useQuery({
+    queryKey: ["images", id],
+    queryFn: fetchImages,
+    gcTime: 0,
+  });
+  const certi = useQuery({
+    queryKey: ["certification", id],
     queryFn: fetchCerti,
     gcTime: 0,
   });
-
-  const {
-    data: trailer,
-    error: trailerError,
-    isLoading: trailerLoader,
-  } = useQuery({
+  const trailer = useQuery({
     queryKey: ["trailer", id],
     queryFn: fetchTrailer,
     gcTime: 0,
   });
 
-  const certifi = certi?.results?.filter(
+  const certifi = certi?.data?.results?.filter(
     (certi: any) => certi.iso_3166_1 === "DE"
   );
 
-  // Or using optional chaining to make it more concise
   const age = certifi?.[0]?.release_dates?.[0]?.certification;
-  const descriptors = certifi?.[0]?.release_dates?.[0]?.descriptors;
-  console.log(descriptors);
 
-  console.log("ID:", id);
+  const descriptors = certifi?.[0]?.release_dates?.[0]?.descriptors;
+
+  const logo_path = images?.data?.logos[0]?.file_path;
+  console.log(images?.data?.logos);
 
   // Find the corresponding content rating icon based on the age
   const ageRatingIcon = contentRating.find(
     (rating) => rating.name === age
   )?.icon;
 
+  const rating = movie?.data?.vote_average;
+  const runtime = movie?.data?.runtime;
+
   const contentRatingIcon = (descriptor: string) =>
     contentRating.find((rating) => rating.name === descriptor)?.icon;
 
   // trailerKey is undefined the first time rendering thats why can't filter
-  const trailerKey = trailer?.results[0]?.key;
-  console.log("KEY:", trailerKey);
+  const trailerKey = trailer?.data?.results[0]?.key;
 
-  console.log(movie);
-
-  if (movieLoader || certiLoader || trailerLoader)
+  if (
+    movie.isLoading ||
+    images.isLoading ||
+    certi.isLoading ||
+    trailer.isLoading
+  )
     return (
       <SafeAreaView>
         <Text>Loading...</Text>
       </SafeAreaView>
     );
 
-  if (movieError || certiError || trailerError)
+  if (movie.isError || images.isError || certi.isError || trailer.isError)
     return (
       <SafeAreaView>
         <Text>
           Error:
-          {movieError && movieError.message}
-          {certiError && certiError.message}
-          {trailerError && trailerError.message}
+          {movie.isError && movie.error.message}
+          {images.isError && images.error.message}
+          {certi.isError && certi.error.message}
+          {trailer.isError && trailer.error.message}
         </Text>
       </SafeAreaView>
     );
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Image */}
+      {/* Backdrop Image */}
       <View>
         <Image
-          source={{ uri: `${TMDB_IMAGE_BASE_URL}${movie.backdrop_path}` }}
+          source={{
+            uri: `${TMDB_IMAGE_BASE_URL}${movie?.data?.backdrop_path}`,
+          }}
           style={styles.backdropImage}
         />
       </View>
 
-      {/* TITLE / CONTENT RATING */}
+      {/* LOGO / CONTENT RATING */}
       <View style={styles.contentIconBox}>
         <View>
-          <Text style={styles.header}>{movie.title}</Text>
+          <Image
+            source={{ uri: `${TMDB_IMAGE_BASE_URL}${logo_path}` }}
+            style={{ width: 150, height: 75 }}
+            resizeMode="contain"
+          />
         </View>
 
         <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -180,13 +191,7 @@ https://api.themoviedb.org/3/movie/${id}/videos?api_key=ebce74cb934fc3d8fd857229
         </View>
       </View>
 
-      {/* <Text>
-          {movie.production_companies?.length > 1 ? "Companies: " : "Company: "}
-          {movie.production_companies?.map(({ name }: any) => name).join(", ")}
-        </Text> */}
-
       {/* OTHER DETAILS */}
-
       <View
         style={{
           flexDirection: "row",
@@ -196,22 +201,27 @@ https://api.themoviedb.org/3/movie/${id}/videos?api_key=ebce74cb934fc3d8fd857229
         }}
       >
         <View>
-          <Text>Rating: {Number(movie.vote_average).toFixed(1)}</Text>
-          <Text>Runtime: {movie.runtime} minutes</Text>
-          <Text>Country: {movie.origin_country[0]}</Text>
-          <Text>Language: {movie.original_language.toUpperCase()}</Text>
+          <Text>
+            Rating: {rating === 0 ? "T.B.A." : Number(rating).toFixed(1)}
+          </Text>
+          <Text>
+            Runtime: {runtime === 0 ? "T.B.A." : `${runtime} minutes`}
+          </Text>
+          <Text>Country: {movie?.data?.origin_country[0]}</Text>
+          <Text>Language: {movie?.data?.original_language.toUpperCase()}</Text>
         </View>
         <View>
           <Text>
-            Genres: {movie.genres.map(({ name }: any) => name).join(", ")}
+            Genres:
+            {movie?.data?.genres.map(({ name }: any) => name).join(", ")}
           </Text>
-          <Text>Release Date: {movie.release_date}</Text>
+          <Text>Release Date: {movie?.data?.release_date}</Text>
         </View>
-        {/* Render the content rating image */}
       </View>
 
+      {/* Overview */}
       <View>
-        <Text>Overview: {movie.overview}</Text>
+        <Text>Overview: {movie?.data?.overview}</Text>
       </View>
 
       {/* Trailer */}
