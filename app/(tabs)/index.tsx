@@ -5,7 +5,7 @@ import { ScrollView } from "react-native";
 
 const HomePage = () => {
   return (
-    <ScrollView>
+    <ScrollView style={{ backgroundColor: "#141414" }}>
       <Header />
       <PopularMovies />
       <TopRatedMovies />

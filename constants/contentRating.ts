@@ -3,50 +3,62 @@
 export const contentRating = [
   {
     name: "0",
-    icon: "https://www.quatrocinema.nl/wp-content/uploads/2016/02/kijkwijzer-AL-300x300-90x90.png",
+    icon: "https://www.kijkwijzer.nl/media/ovmjwgmq/al.png?width=80&height=80&mode=max&token=XPLpXantfC",
   },
   {
     name: "6",
-    icon: "https://www.quatrocinema.nl/wp-content/uploads/2016/02/kijkwijzer-6-300x300-90x90.png",
+    icon: "https://www.kijkwijzer.nl/media/avlcycfz/6.png?width=80&height=80&mode=max&token=DmEdTZ1%2f6%2f",
+  },
+  {
+    name: "9",
+    icon: "https://www.kijkwijzer.nl/media/s5rf1lpy/9.png?width=80&height=80&mode=max&token=Q8PIPbFyWB",
   },
   {
     name: "12",
-    icon: "https://www.quatrocinema.nl/wp-content/uploads/2016/02/kijkwijzer-12-300x300-90x90.png",
+    icon: "https://www.kijkwijzer.nl/media/vz4av3wf/12.png?width=80&height=80&mode=max&token=zlvq4oT3d7",
+  },
+  {
+    name: "14",
+    icon: "https://www.kijkwijzer.nl/media/0gnp0ifa/14.png?width=80&height=80&mode=max&token=2BNhxde8jZ",
   },
   {
     name: "16",
-    icon: "https://www.quatrocinema.nl/wp-content/uploads/2016/02/kijkwijzer-16.png",
+    icon: "https://www.kijkwijzer.nl/media/iryaeluj/16.png?width=80&height=80&mode=max&token=gBY%2fUAnFNQ",
+  },
+  {
+    name: "18",
+    icon: "https://www.kijkwijzer.nl/media/xtimbi5i/18.png?width=80&height=80&mode=max&token=A%2bTNX1rccY",
   },
   {
     name: "Violence",
-    icon: "https://e7.pngegg.com/pngimages/312/241/png-clipart-domestic-violence-cinema-film-sexual-abuse-lionhead-miscellaneous-logo-thumbnail.png",
+    icon: "https://www.kijkwijzer.nl/media/hnilas2f/geweld.png?width=80&height=80&mode=max&token=3Armjj3WdG",
   },
   {
     name: "Threat",
-    icon: "https://e7.pngegg.com/pngimages/950/248/png-clipart-kijkwijzer-film-director-cinema-animation-others-miscellaneous-child.png",
+    icon: "https://www.kijkwijzer.nl/media/bsapquvb/angst.png?width=80&height=80&mode=max&token=ex9NYQ0JLe",
   },
   {
     name: "Injury",
-    icon: "https://e7.pngegg.com/pngimages/312/241/png-clipart-domestic-violence-cinema-film-sexual-abuse-lionhead-miscellaneous-logo-thumbnail.png",
+    icon: "https://www.kijkwijzer.nl/media/hnilas2f/geweld.png?width=80&height=80&mode=max&token=3Armjj3WdG",
   },
   {
     name: "Stressful Scenes",
-    icon: "https://e7.pngegg.com/pngimages/950/248/png-clipart-kijkwijzer-film-director-cinema-animation-others-miscellaneous-child.png",
+    icon: "https://www.kijkwijzer.nl/media/bsapquvb/angst.png?width=80&height=80&mode=max&token=ex9NYQ0JLe",
   },
   {
     name: "Drug Consumption",
-    icon: "https://seeklogo.com/images/K/Kijkwijzer__drugs_en_alcoholmisbruik-logo-A47060EA10-seeklogo.com.png",
+    icon: "https://www.kijkwijzer.nl/media/3hkfncep/drugs-en-alcohol.png?width=80&height=80&mode=max&token=pXh%2b3YZRHe",
   },
   {
     name: "Language",
-    icon: "https://e7.pngegg.com/pngimages/33/386/png-clipart-kijkwijzer-film-movie-theater-scalable-graphics-ethan-hunt-caps-for-sale-activities-text-logo.png",
+    icon: "https://www.kijkwijzer.nl/media/cdwludj4/taal.png?width=80&height=80&mode=max&token=13LSmVcYsj",
   },
   {
     name: "Discrimination",
-    icon: "https://e7.pngegg.com/pngimages/860/509/png-clipart-employment-discrimination-netherlands-kijkwijzer-racism-others-love-miscellaneous.png",
+    icon: "https://www.kijkwijzer.nl/media/3usjsamw/discriminatie.png?width=80&height=80&mode=max&token=PUlE2l%2f8DP",
   },
   {
     name: "Sex & Nudity",
-    icon: "https://e7.pngegg.com/pngimages/272/191/png-clipart-kijkwijzer-logo-sexual-intercourse-others-cdr-face.png",
+    icon: "https://www.kijkwijzer.nl/media/ou1pevma/seks.png?width=80&height=80&mode=max&token=Wp5IaxvDim",
   },
 ];

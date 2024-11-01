@@ -90,11 +90,13 @@ const Upcoming = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+    backgroundColor: "#141414",
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 8,
+    color: "#fff",
   },
   errorText: {
     color: "red",

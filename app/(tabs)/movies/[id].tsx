@@ -23,7 +23,7 @@ const MoviePage = () => {
   // render genres for flatlist
   const renderGenres = ({ item }: { item: ItemProp }) => (
     <View>
-      <Text>{item.name}</Text>
+      <Text style={{ color: "#FFF" }}>{item.name}</Text>
     </View>
   );
 
@@ -166,94 +166,104 @@ https://api.themoviedb.org/3/movie/${id}/images?api_key=${API_KEY}&include_image
       </View>
 
       {/* LOGO / CONTENT RATING */}
-      <View style={styles.contentIconBox}>
-        <View>
-          <Image
-            source={{ uri: `${TMDB_IMAGE_BASE_URL}${logo_path}` }}
-            style={{ width: 150, height: 75 }}
-            resizeMode="contain"
-          />
-        </View>
-
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          {age && (
+      <View style={{ backgroundColor: "#141414" }}>
+        <View style={styles.contentIconBox}>
+          {logo_path && (
             <View>
-              {ageRatingIcon && (
-                <Image
-                  source={{ uri: `${ageRatingIcon}` }}
-                  style={{ width: 24, height: 24 }}
-                />
-              )}
+              <Image
+                source={{ uri: `${TMDB_IMAGE_BASE_URL}${logo_path}` }}
+                style={{ width: 150, height: 75 }}
+                resizeMode="contain"
+              />
             </View>
           )}
 
-          {/* Render descriptors and their corresponding icons */}
-          {descriptors?.length > 0 && (
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              {/* Array to keep track of unique icons */}
-              {descriptors
-                .reduce((uniqueIcons: string[], descriptor: string) => {
-                  const icon = contentRatingIcon(descriptor); // Get the icon for each descriptor
-                  // Check if the icon is not already in the uniqueIcons array
-                  if (
-                    icon &&
-                    !uniqueIcons.some(
-                      (uniqueIcon: string) => uniqueIcon === icon
-                    )
-                  ) {
-                    uniqueIcons.push(icon); // Add the unique icon to the array
-                  }
-                  return uniqueIcons; // Return the array of unique icons
-                }, [])
-                .map((icon: string, i: number) => (
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            {age && (
+              <View>
+                {ageRatingIcon && (
                   <Image
-                    key={i} // Use index as key, though ideally, a unique identifier is better
-                    source={{ uri: icon }} // Render the icon
+                    source={{ uri: `${ageRatingIcon}` }}
                     style={{ width: 24, height: 24 }}
                   />
-                ))}
-            </View>
-          )}
+                )}
+              </View>
+            )}
+
+            {/* Render descriptors and their corresponding icons */}
+            {descriptors?.length > 0 && (
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                {/* Array to keep track of unique icons */}
+                {descriptors
+                  .reduce((uniqueIcons: string[], descriptor: string) => {
+                    const icon = contentRatingIcon(descriptor); // Get the icon for each descriptor
+                    // Check if the icon is not already in the uniqueIcons array
+                    if (
+                      icon &&
+                      !uniqueIcons.some(
+                        (uniqueIcon: string) => uniqueIcon === icon
+                      )
+                    ) {
+                      uniqueIcons.push(icon); // Add the unique icon to the array
+                    }
+                    return uniqueIcons; // Return the array of unique icons
+                  }, [])
+                  .map((icon: string, i: number) => (
+                    <Image
+                      key={i} // Use index as key, though ideally, a unique identifier is better
+                      source={{ uri: icon }} // Render the icon
+                      style={{ width: 24, height: 24 }}
+                    />
+                  ))}
+              </View>
+            )}
+          </View>
+        </View>
+
+        {/* OTHER DETAILS */}
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            paddingVertical: 8,
+          }}
+        >
+          <View style={{ paddingHorizontal: 8 }}>
+            <Text style={{ color: "#FFF" }}>
+              Rating: {rating === 0 ? "T.B.A." : Number(rating).toFixed(1)}
+            </Text>
+            <Text style={{ color: "#FFF" }}>
+              Runtime: {runtime === 0 ? "T.B.A." : `${runtime} minutes`}
+            </Text>
+            <Text style={{ color: "#FFF" }}>
+              Country: {movie?.data?.origin_country[0]}
+            </Text>
+            <Text style={{ color: "#FFF" }}>
+              Language: {movie?.data?.original_language.toUpperCase()}
+            </Text>
+          </View>
+
+          <View style={{ flexDirection: "column", marginHorizontal: 8 }}>
+            <Text style={{ color: "#FFF" }}>Genres:</Text>
+            <FlatList data={movie?.data?.genres} renderItem={renderGenres} />
+            <Text style={{ color: "#FFF" }}>
+              Release Date: {movie?.data?.release_date}
+            </Text>
+          </View>
+        </View>
+
+        {/* Overview */}
+        <View>
+          <Text style={styles.overview}>Overview: {movie?.data?.overview}</Text>
         </View>
       </View>
-
-      {/* OTHER DETAILS */}
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          paddingVertical: 8,
-        }}
-      >
-        <View style={{ paddingHorizontal: 8 }}>
-          <Text>
-            Rating: {rating === 0 ? "T.B.A." : Number(rating).toFixed(1)}
-          </Text>
-          <Text>
-            Runtime: {runtime === 0 ? "T.B.A." : `${runtime} minutes`}
-          </Text>
-          <Text>Country: {movie?.data?.origin_country[0]}</Text>
-          <Text>Language: {movie?.data?.original_language.toUpperCase()}</Text>
-        </View>
-
-        <View style={{ flexDirection: "column", marginHorizontal: 8 }}>
-          <Text>Genres:</Text>
-          <FlatList data={movie?.data?.genres} renderItem={renderGenres} />
-          <Text>Release Date: {movie?.data?.release_date}</Text>
-        </View>
-      </View>
-
-      {/* Overview */}
-      <View>
-        <Text style={styles.overview}>Overview: {movie?.data?.overview}</Text>
-      </View>
-
       {/* Trailer */}
       {trailerUrl ? (
         <WebView
           source={{ uri: `https://www.youtube.com/embed/${trailerUrl?.key}` }}
           style={styles.webView}
+          startInLoadingState={true}
         />
       ) : (
         <Text style={{ textAlign: "center" }}>No trailer available</Text>
@@ -276,7 +286,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 20,
   },
-  webView: { height: "100%", width: "100%", backgroundColor: "default" },
+  webView: {
+    width: "100%", // Full width
+    height: "100%", // Fixed height; adjust as necessary
+    aspectRatio: 16 / 9,
+  },
   ratingIcon: {
     width: 24, // Adjust as needed
     height: 24, // Adjust as needed
@@ -290,6 +304,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     justifyContent: "center",
     alignItems: "center",
+    color: "#FFF",
   },
 });
 

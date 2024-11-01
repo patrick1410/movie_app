@@ -81,6 +81,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 16,
     marginLeft: 8,
+    color: "#FFF",
   },
   errorText: {
     color: "red",
